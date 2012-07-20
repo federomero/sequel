@@ -258,7 +258,9 @@ module Sequel
               raise(Error, "no matching associated object with given primary key (association: #{reflection[:name]}, pk: #{pk})")
             end
           else
-            nested_attributes_create(reflection, attributes)
+            unless [:_delete, '_delete', :_remove, '_remove'].any?{|key| klass.db.send(:typecast_value_boolean, attributes.delete(key))}
+              nested_attributes_create(reflection, attributes)
+            end
           end
         end
         
